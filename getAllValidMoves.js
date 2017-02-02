@@ -1,6 +1,14 @@
 var _ = require('lodash');
 
-module.exports = function getAllValidMoves(board, whites, blacks){
+module.exports = function getAllValidMoves(board, whites, blacks, player){
+  var X, O;
+  if(player == 'W') {
+    X = 'X';
+    O = 'O';
+  }else { // if player == 'B'
+    X = 'O';
+    O = 'X';
+  }
   var current_coin, adjacent_coin, current_traversal;
   var allValidMoves = [];
 
@@ -25,20 +33,20 @@ module.exports = function getAllValidMoves(board, whites, blacks){
     }
     if(
       new_row > 7 || new_col > 7 || new_row < 0 || new_col < 0 ||// check if we reached the end of the board
-      current_board[new_row][new_col] === 'X' // check if the current movement gives you a white coin
+      current_board[new_row][new_col] === X // check if the current movement gives you a white coin
     ){
       // Either of the 2 conditions makes it is an illegal move.
       return false;
     }
     else {  //in here it can only be a * or O, as we are cutting out the chance to show 'X' in the above if.
-      if(current_board[new_row][new_col] === 'O'){ //check if the current movement gives you a black coin
+      if(current_board[new_row][new_col] === O){ //check if the current movement gives you a black coin
         coin = {row: new_row, col: new_col};  //update coin to the next square through the same movement
-        current_board[new_row][new_col] = 'X';
+        current_board[new_row][new_col] = X;
         traverseRecursively(current_board, coin, {row:row, col:col}); //traverse recursively through the same path
       }else {
         if((new_row + row < 8) && (new_col + col < 8) && (new_row + row >= 0) && (new_col + col >= 0)) {
           //if the black coin is not at the end of the board after all this, then we can be sure that it is a valid move.
-          current_board[new_row][new_col] = 'X';
+          current_board[new_row][new_col] = X;
           adjacent_coin = {row: new_row, col: new_col};
           allValidMoves.push({board:current_board, move: row_col, coin: adjacent_coin});
         }else{
@@ -63,8 +71,8 @@ module.exports = function getAllValidMoves(board, whites, blacks){
     var board_now = final_board_values[valid_move.coin.row + ',' + valid_move.coin.col];
     for(var i=0; i<8; i++){
       for(var j=0; j<8; j++){
-        if(board_now[i][j] == 'X' ||  valid_move.board[i][j] == 'X'){
-          board_now[i][j] = 'X';
+        if(board_now[i][j] == X ||  valid_move.board[i][j] == X){
+          board_now[i][j] = X;
         }
       }
     }
