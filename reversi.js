@@ -62,8 +62,7 @@ var DEPTH = 3;
 var allChildsAtDepth;
 var original_player = 'W';
 
-function checIfTerminalNode(board, level){
-  if(level == DEPTH) return findWeightOfTerminalNode(board);
+function findWeightOfBoard(board){
   var checkFor = 'X';
   var value = 0;
   if(original_player == 'B') checkFor = '0';
@@ -74,23 +73,28 @@ function checIfTerminalNode(board, level){
       else value-= weights[i][j];
     }
   }
+  return value;
 }
 
 var root = {
   key : 'root',
   value: null,    // Value which is determined using the heuristic function/ alpha-beta algorithm.
   parent: null,   // The parent of this node; for root node it will be null.
-  children : [],  // If the length of array is null, it means its a terminal node.
+  children : {},  // If the length of array is null, it means its a terminal node.
   state: board,   // The state of the board at this node.
   player: null, // Based on who's playing first
-  level: 0
+  level: 0,
+  move: 'root'
 };
 
 childNodes = [root];
-allChildsAtDepth = [childNodes];
-
+var allChildsAtDepth = {
+  'root' : root
+};
+var allMoves = ['root'];
+var temp_nodes_array = [];
 for(var i=1; i<= DEPTH; i++){
-  allChildsAtDepth[i] = [];
+  temp_nodes_array = [];
   for(var j=0; j<childNodes.length; j++){
     var coins = updateWhiteBlack(childNodes[j].state);
     var pl, op;
@@ -106,28 +110,28 @@ for(var i=1; i<= DEPTH; i++){
     var children = getAllValidMoves(childNodes[j].state, pl, op, player);
     childNodes[j].children = children;
     _.forEach(children, function(board, key){
-      // checIfTerminalNode(board, i);
-      allChildsAtDepth[i].push({
-        key: childNodes[j].key + '->' + key,
-        value : null,//checIfTerminalNode(children[i]),
+      var some_key = childNodes[j].key + '->' + key;
+      temp_nodes_array.push({
+        key: some_key,
+        move: key,  // to show the move made
+        value : null, //checIfTerminalNode(children[i]),
         parent: childNodes[j].key,
-        children : [],
+        children : {},
         state: board,
         player: player,
-        level: i+1
+        level: i,
       });
+      allMoves.push(some_key);
+      allChildsAtDepth[some_key] = JSON.parse(JSON.stringify(temp_nodes_array[temp_nodes_array.length-1]));
     });
   }
-  childNodes = allChildsAtDepth[i];
+  childNodes = temp_nodes_array;
 }
-// console.log('allChildsAtDepth \n', allChildsAtDepth);
-both_pl = ['B','W']
-for(var i=0; i<allChildsAtDepth.length; i++){
-  for(var j=0; j<allChildsAtDepth[i].length; j++){
-    // console.log("player: " + both_pl[i%2]);
-    // console.log("parent move : " + allChildsAtDepth[i][j].parent);
-    console.log(allChildsAtDepth[i][j].key);
-    // console.log("\n");
-    // printBoard(allChildsAtDepth[i][j].state);
-  }
+
+allMoves.sort();
+// console.log('allMoves', allMoves);
+// console.log('allChildsAtDepth', allChildsAtDepth);
+console.log('UniqueKey\t\t\t\t\tMove');
+for(var i=0; i<allMoves.length; i++){
+  console.log(allMoves[i] + '\t\t\t\t' + allChildsAtDepth[allMoves[i]].move);
 }
