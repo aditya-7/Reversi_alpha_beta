@@ -4,8 +4,8 @@ var getAllValidMoves = require('./getAllValidMoves');
 // var whites = [{row: 3, col:5},{row: 4, col:4}, {row:5, col:0}, {row:1, col:0}];
 // var blacks = [{row: 3, col:3 },{row: 3, col:4},{row: 2, col:4}, {row:4, col:1}, {row:2, col:1}];
 
-var whites = [{row: 0, col:0}];
-var blacks = [{row:1,col:1}, {row:2, col:2}];
+var whites = [{row:3,col:3}, {row:4, col:5}];
+var blacks = [{row: 2, col:3},{row: 3, col:4}];
 var board = [];
 
 //Note that board starts from [0][0] and ends at [7][7] here.
@@ -120,4 +120,14 @@ for(var i=1; i<= DEPTH; i++){
   }
   childNodes = allChildsAtDepth[i];
 }
-console.log('allChildsAtDepth \n', allChildsAtDepth);
+// console.log('allChildsAtDepth \n', allChildsAtDepth);
+both_pl = ['B','W']
+for(var i=0; i<allChildsAtDepth.length; i++){
+  for(var j=0; j<allChildsAtDepth[i].length; j++){
+    // console.log("player: " + both_pl[i%2]);
+    // console.log("parent move : " + allChildsAtDepth[i][j].parent);
+    console.log(allChildsAtDepth[i][j].key);
+    // console.log("\n");
+    // printBoard(allChildsAtDepth[i][j].state);
+  }
+}
