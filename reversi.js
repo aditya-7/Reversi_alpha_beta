@@ -1,6 +1,8 @@
 
 var _ = require('lodash');
+var alpha_beta = require('./alpha_beta_pruning');
 var getAllValidMoves = require('./getAllValidMoves');
+
 // var whites = [{row: 3, col:5},{row: 4, col:4}, {row:5, col:0}, {row:1, col:0}];
 // var blacks = [{row: 3, col:3 },{row: 3, col:4},{row: 2, col:4}, {row:4, col:1}, {row:2, col:1}];
 
@@ -123,6 +125,8 @@ function convertToBoardMove(move){
 var root = {
   key : 'root',
   value: null,    // Value which is determined using the heuristic function/ alpha-beta algorithm.
+  alpha: null,
+  beta: null,
   parent: null,   // The parent of this node; for root node it will be null.
   children : [],  // If the length of array is null, it means its a terminal node.
   state: board,   // The state of the board at this node.
@@ -159,6 +163,8 @@ for(var i=1; i<= DEPTH; i++){
         key: some_key,  // is this useful? I dont think so!
         move: convertToBoardMove(key),  // to show the move made
         value : some_value,
+        alpha: null,
+        beta: null,
         parent: childNodes[j].key,
         children : [],
         state: board,
@@ -175,22 +181,4 @@ for(var i=1; i<= DEPTH; i++){
 }
 
 allKeys.sort();
-var allMovesInTraversal = ['root'];
-for(var i=1; i<allKeys.length; i++){
-  if(allKeys[i].indexOf(allKeys[i-1]) > -1){
-    allMovesInTraversal.push(allKeys[i]);
-  }
-  else{
-    var some_key = allKeys[i-1  ];
-    while(allKeys[i].indexOf(some_key) === -1){
-      some_key = some_key.substring(0,some_key.length-5);
-      // some_array.unshift(some_key);
-      allMovesInTraversal.push(some_key);
-    }
-    allMovesInTraversal.push(allKeys[i]);
-  }
-}
-console.log('final traversal: ',allMovesInTraversal);
-for(var i=0;i<allMovesInTraversal.length;i++){
-  console.log(allChildsAtDepth[allMovesInTraversal[i]].move + ' ' + allChildsAtDepth[allMovesInTraversal[i]].value)
-}
+alpha_beta(allChildsAtDepth, allKeys);
