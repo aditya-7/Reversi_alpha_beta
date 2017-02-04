@@ -11,7 +11,6 @@ var blacks = [{row: 2, col:3},{row: 3, col:4}];
 var board = [];
 
 //Note that board starts from [0][0] and ends at [7][7] here.
-
 // arrange the board
 for(var row=0; row<8; row++){
   board[row] = [];
@@ -63,40 +62,6 @@ var childNodes;
 var DEPTH = 3;
 var allChildsAtDepth;
 var original_player = 'W';
-var weights = [
-  [99, -8, 8, 6, 6, 8, -8, 99],
-  [-8, -24, -4, -3, -3, -4, -24, -8],
-  [8, -4, 7, 4, 4, 7, -4, 8],
-  [6, -3, 4, 0, 0, 4, -3, 6],
-  [6, -3, 4, 0, 0, 4, -3, 6],
-  [8, -4, 7, 4, 4, 7, -4, 8],
-  [-8, -24, -4, -3, -3, -4, -24, -8],
-  [99, -8, 8, 6, 6, 8, -8, 99]
-];
-
-function findWeightOfBoard(board, level){
-  var checkFor = 'X';
-  var Xchecker = false;
-  var Ychecker = false;
-  var value = 0;
-  if(original_player == 'B') checkFor = '0';
-  for(var i=0; i<8; i++){
-    for(var j=0; j<8; j++){
-      if(board[i][j] === '*') continue;
-      if(board[i][j] === checkFor){
-        value+= weights[i][j];
-        if(Xchecker == true && level <DEPTH) return null;
-        Ychecker = true;
-      }
-      else{
-        value-= weights[i][j];
-        if(Ychecker == true && level <DEPTH) return null;
-        Xchecker = true;
-      }
-    }
-  }
-  return value;
-}
 
 function convertToBoardMove(move){
   var col;
@@ -130,7 +95,6 @@ var root = {
   parent: null,   // The parent of this node; for root node it will be null.
   children : [],  // If the length of array is null, it means its a terminal node.
   state: board,   // The state of the board at this node.
-  player: null,   // Based on who's playing first
   level: 0,
   move: 'root'
 };
@@ -158,17 +122,15 @@ for(var i=1; i<= DEPTH; i++){
     var children = getAllValidMoves(childNodes[j].state, pl, op, player);
     _.forEach(children, function(board, key){
       var some_key = childNodes[j].key + '->' + key;
-      var some_value = findWeightOfBoard(board, i);
       temp_nodes_array.push({
-        key: some_key,  // is this useful? I dont think so!
+        key: some_key,
         move: convertToBoardMove(key),  // to show the move made
-        value : some_value,
+        value : null,
         alpha: null,
         beta: null,
         parent: childNodes[j].key,
         children : [],
         state: board,
-        player: player,
         level: i,
       });
       allChildsAtDepth[childNodes[j].key].children.push(some_key);
@@ -181,4 +143,4 @@ for(var i=1; i<= DEPTH; i++){
 }
 
 allKeys.sort();
-alpha_beta(allChildsAtDepth, allKeys);
+alpha_beta(allChildsAtDepth, allKeys, original_player);
