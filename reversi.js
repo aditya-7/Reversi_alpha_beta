@@ -61,16 +61,36 @@ var childNodes;
 var DEPTH = 3;
 var allChildsAtDepth;
 var original_player = 'W';
+var weights = [
+  [99, -8, 8, 6, 6, 8, -8, 99],
+  [-8, -24, -4, -3, -3, -4, -24, -8],
+  [8, -4, 7, 4, 4, 7, -4, 8],
+  [6, -3, 4, 0, 0, 4, -3, 6],
+  [6, -3, 4, 0, 0, 4, -3, 6],
+  [8, -4, 7, 4, 4, 7, -4, 8],
+  [-8, -24, -4, -3, -3, -4, -24, -8],
+  [99, -8, 8, 6, 6, 8, -8, 99],
+];
 
-function findWeightOfBoard(board){
+function findWeightOfBoard(board, level){
   var checkFor = 'X';
+  var Xchecker = false;
+  var Ychecker = false;
   var value = 0;
   if(original_player == 'B') checkFor = '0';
   for(var i=0; i<8; i++){
     for(var j=0; j<8; j++){
       if(board[i][j] === '*') continue;
-      if(board[i][j] === checkFor) value+= weights[i][j];
-      else value-= weights[i][j];
+      if(board[i][j] === checkFor){
+        value+= weights[i][j];
+        if(Xchecker == true && level <DEPTH) return null;
+        Ychecker = true;
+      }
+      else{
+        value-= weights[i][j];
+        if(Ychecker == true && level <DEPTH) return null;
+        Xchecker = true;
+      }
     }
   }
   return value;
@@ -82,7 +102,7 @@ var root = {
   parent: null,   // The parent of this node; for root node it will be null.
   children : {},  // If the length of array is null, it means its a terminal node.
   state: board,   // The state of the board at this node.
-  player: null, // Based on who's playing first
+  player: null,   // Based on who's playing first
   level: 0,
   move: 'root'
 };
@@ -108,13 +128,14 @@ for(var i=1; i<= DEPTH; i++){
       player = 'B';
     }
     var children = getAllValidMoves(childNodes[j].state, pl, op, player);
-    childNodes[j].children = children;
+    childNodes[j].children = children;  // Is this useful ? I dont think so!
     _.forEach(children, function(board, key){
       var some_key = childNodes[j].key + '->' + key;
+      var some_value = findWeightOfBoard(board, i);
       temp_nodes_array.push({
-        key: some_key,
+        key: some_key,  // is this useful? I dont think so!
         move: key,  // to show the move made
-        value : null, //checIfTerminalNode(children[i]),
+        value : some_value,
         parent: childNodes[j].key,
         children : {},
         state: board,
@@ -132,6 +153,7 @@ allMoves.sort();
 // console.log('allMoves', allMoves);
 // console.log('allChildsAtDepth', allChildsAtDepth);
 console.log('UniqueKey\t\t\t\t\tMove');
-for(var i=0; i<allMoves.length; i++){
-  console.log(allMoves[i] + '\t\t\t\t' + allChildsAtDepth[allMoves[i]].move);
+// for(var i=allMoves.length-1; i>=0; i--){
+for(var i=0; i<allMoves.length-1; i++){
+  console.log(allMoves[i] + '\t\t\t\t' + allChildsAtDepth[allMoves[i]].value);
 }
