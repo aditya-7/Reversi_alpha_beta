@@ -1,12 +1,12 @@
 {
-  "name": "ai_algo",
+  "name": "alpha_beta_on_reversi",
   "version": "1.0.0",
   "description": "algos for ai",
   "main": "reversi.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "aditya",
+  "author": "aditya-7",
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.4"
