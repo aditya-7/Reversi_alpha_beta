@@ -175,7 +175,6 @@ for(var i=1; i<= DEPTH; i++){
 }
 
 allKeys.sort();
-console.log(allKeys);
 var allMovesInTraversal = ['root'];
 for(var i=1; i<allKeys.length; i++){
   if(allKeys[i].indexOf(allKeys[i-1]) > -1){
@@ -183,16 +182,10 @@ for(var i=1; i<allKeys.length; i++){
   }
   else{
     var some_key = allKeys[i-1  ];
-    var some_array = [];
     while(allKeys[i].indexOf(some_key) === -1){
       some_key = some_key.substring(0,some_key.length-5);
       // some_array.unshift(some_key);
       allMovesInTraversal.push(some_key);
-    }
-    for(var j=some_array.length-1; j>0; j--){
-      if(some_array[j] !== some_array[j-1]){
-        allMovesInTraversal.push(some_array[j]);
-      }
     }
     allMovesInTraversal.push(allKeys[i]);
   }
