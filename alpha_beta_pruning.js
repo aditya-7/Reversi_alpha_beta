@@ -2,6 +2,8 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
 
   var _ALPHA = -99999;
   var _BETA = 99999;
+  allChildsAtDepth['root'].alpha = _ALPHA;
+  allChildsAtDepth['root'].beta = _BETA;
 
   var allMovesInTraversal = ['root'];
   for(var i=1; i<allKeys.length; i++){
@@ -45,34 +47,63 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
     return value;
   }
 
-  function updateAlphaBeta(node){
-
+  function parent_node_value(key, code){
+    var children = allChildsAtDepth[key].children;
+    var min = allChildsAtDepth[children[0]].value;
+    var max = allChildsAtDepth[children[0]].value;
+    for(var i=1;i<children.length;i++){
+      if(allChildsAtDepth[children[i].value] === null) continue;
+      if(allChildsAtDepth[children[i]] > max) max = allChildsAtDepth[children[i]];
+      if(allChildsAtDepth[children[i]] < min) min = allChildsAtDepth[children[i]];
+    }
+    if(code === 'MAX') return max;
+    return min;
   }
 
-  allChildsAtDepth['root'].alpha = _ALPHA;
-  allChildsAtDepth['root'].beta = _BETA;
-  // console.log(allChildsAtDepth['root']);
+  function maximiser(key){
+    allChildsAtDepth[key].alpha = (allChildsAtDepth[key].alpha > allChildsAtDepth[key].value) ? allChildsAtDepth[key].alpha : allChildsAtDepth[key].value;
+  }
+
+  function minimiser(key){
+    allChildsAtDepth[key].beta = (allChildsAtDepth[key].beta < allChildsAtDepth[key].value) ? allChildsAtDepth[key].beta : allChildsAtDepth[key].value;
+  }
+
+  function updateAlphaBetaForLeaf(key){
+    allChildsAtDepth[key].value = findWeightOfBoard(allChildsAtDepth[key].state);
+    if(allChildsAtDepth[key].level % 2 === 0) maximiser(key);
+    else minimiser(key);
+  }
+
+  function updateAlphaBetaForParent(key){
+    if(allChildsAtDepth[key].level % 2 === 0){
+      allChildsAtDepth[key].value = parent_node_value(key, 'MAX');
+      maximiser(key);
+    }else {
+      allChildsAtDepth[key].value = parent_node_value(key, 'MIN');
+      minimiser(key);
+    }
+  }
 
   for(var i=1; i<allMovesInTraversal.length; i++){
-    // if(allMovesInTraversal[i].indexOf(allMovesInTraversal[i-1]) > -1){
+    if(allChildsAtDepth[allMovesInTraversal[i]].parent === allMovesInTraversal[i-1]){
+      console.log('parent to child',allMovesInTraversal[i]);
       // child node, pass down the alpha beta value.
       // but check if its a terminal node first.
-      // allChildsAtDepth[allMovesInTraversal[i]].alpha = allChildsAtDepth[allMovesInTraversal[i-1]].alpha;
-      // allChildsAtDepth[allMovesInTraversal[i]].beta = allChildsAtDepth[allMovesInTraversal[i-1]].beta;
+      allChildsAtDepth[allMovesInTraversal[i]].alpha = allChildsAtDepth[allMovesInTraversal[i-1]].alpha;
+      allChildsAtDepth[allMovesInTraversal[i]].beta = allChildsAtDepth[allMovesInTraversal[i-1]].beta;
       if(allChildsAtDepth[allMovesInTraversal[i]].children.length === 0){
         // it is a terminal node
-        allChildsAtDepth[allMovesInTraversal[i]].value = findWeightOfBoard(allChildsAtDepth[allMovesInTraversal[i]].state);
-        updateAlphaBeta(allMovesInTraversal);
+        updateAlphaBetaForLeaf(allMovesInTraversal[i]);
       }
-    // }
-    // if((allChildsAtDepth[allMovesInTraversal].level) % 2 === 0){
-      // The player is white/MAXIMISER
-      // getAlpha();
-    // }
+    }else{
+      console.log('child to parent',allMovesInTraversal[i]);
+      updateAlphaBetaForParent(allMovesInTraversal[i]);
+    }
   }
 
   for(var i=0;i<allMovesInTraversal.length;i++){
-    console.log(allChildsAtDepth[allMovesInTraversal[i]].key + ' ' + allChildsAtDepth[allMovesInTraversal[i]].value)
+    console.log(allChildsAtDepth[allMovesInTraversal[i]].key + ' ' + allChildsAtDepth[allMovesInTraversal[i]].value);
+    console.log('alpha '+ allChildsAtDepth[allMovesInTraversal[i]].alpha + ' beta' + allChildsAtDepth[allMovesInTraversal[i]].beta);
   }
 
 };
