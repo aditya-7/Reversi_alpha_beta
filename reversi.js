@@ -58,9 +58,9 @@ function convertToBoardMove(move){
     case '5':
       col = 'f'; break;
     case '6':
-      col = 'f'; break;
-    case '7'
-      col = 'h';
+      col = 'g'; break;
+    case '7':
+      col = 'h'; break;
     default:  // if the move is a pass
       return 'pass';
   }
