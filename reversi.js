@@ -37,6 +37,30 @@ function printBoard (some_board){
   }
 }
 
+function convertToBoardMove(move){
+  var col;
+  switch (move[2]) {
+    case '0':
+      col = 'a'; break;
+    case '1':
+      col = 'b'; break;
+    case '2':
+      col = 'c'; break;
+    case '3':
+      col = 'd'; break;
+    case '4':
+      col = 'e'; break;
+    case '5':
+      col = 'f'; break;
+    case '6':
+      col = 'f'; break;
+    default:  //case '7'
+      col = 'h';
+  }
+  var row = Number(move[0]) + 1;
+  return col+row;
+}
+
 function updateWhiteBlack (board){
   var new_whites = [];
   var new_blacks = [];
@@ -63,28 +87,19 @@ var DEPTH = 2;
 var allChildsAtDepth;
 var original_player = 'W';
 
-function convertToBoardMove(move){
-  var col;
-  switch (move[2]) {
-    case '0':
-      col = 'a'; break;
-    case '1':
-      col = 'b'; break;
-    case '2':
-      col = 'c'; break;
-    case '3':
-      col = 'd'; break;
-    case '4':
-      col = 'e'; break;
-    case '5':
-      col = 'f'; break;
-    case '6':
-      col = 'f'; break;
-    default:  //case '7'
-      col = 'h';
+function checkForPassMove(board){
+  var x = false;
+  var y = false;
+  var z = false;
+  for(var i=0; i<8; i++){
+    for(var j=0; j<8; j++){
+      if(board[i][j] === 'X') x = true;
+      else if(board[i][j] === 'O') y = true;
+      else z = true;
+      if( x && y && z) return {'pass': board};
+    }
   }
-  var row = Number(move[0]) + 1;
-  return col+row;
+  return {};
 }
 
 var root = {
@@ -120,7 +135,10 @@ for(var i=1; i<= DEPTH; i++){
       player = 'B';
     }
     var children = getAllValidMoves(childNodes[j].state, pl, op, player);
-    //MAKE CHECK FOR A PASS MOVE
+    if(_.isEmpty(children)){
+      //MAKE CHECK FOR A PASS MOVE
+      children = checkForPassMove(childNodes[j].state)
+    }
     _.forEach(children, function(board, key){
       var some_key = childNodes[j].key + '->' + key;
       temp_nodes_array.push({
