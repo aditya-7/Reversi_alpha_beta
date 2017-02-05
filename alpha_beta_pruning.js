@@ -105,7 +105,7 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
       // console.log('child to parent',allMovesInTraversal[i]);
       updateAlphaBetaForParent(allMovesInTraversal[i]);
       // if alpha >= beta here, prune.
-      
+
     }
     // console.log('alpha',allChildsAtDepth[allMovesInTraversal[i]].alpha);
     // console.log('beta',allChildsAtDepth[allMovesInTraversal[i]].beta);
@@ -113,9 +113,10 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
     // console.log('\n');
   }
   var final_traversal = allMovesInTraversal[allMovesInTraversal.length-1];
-  while(final_traversal === 'root'){
+  while(final_traversal !== 'root'){
     final_traversal = final_traversal.substring(0,final_traversal.length-5);
-    updateAlphaBetaForParent(allMovesInTraversal[i]);
+    console.log('final_traversal',final_traversal);
+    // updateAlphaBetaForParent(final_traversal);
   }
 
     for(var i=0;i<allKeys.length;i++){
