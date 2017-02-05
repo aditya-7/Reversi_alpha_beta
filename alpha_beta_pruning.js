@@ -67,7 +67,7 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
     var min = null;
     for(var i=0;i<children.length;i++){
       if(allChildsAtDepth[children[i]].value === null) continue;
-      if(max === null){ // min === null
+      if(max === null){ // or/and, min === null
         max = allChildsAtDepth[children[i]].value;
         min = allChildsAtDepth[children[i]].value;
       }else{
@@ -91,7 +91,7 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
 
   for(var i=1; i<allMovesInTraversal.length; i++){
     if(allChildsAtDepth[allMovesInTraversal[i]].parent === allMovesInTraversal[i-1]){
-      // console.log('parent to child',allMovesInTraversal[i]);
+      console.log('parent to child',allMovesInTraversal[i]);
       // pass down the alpha-beta values
       allChildsAtDepth[allMovesInTraversal[i]].alpha = allChildsAtDepth[allMovesInTraversal[i-1]].alpha;
       allChildsAtDepth[allMovesInTraversal[i]].beta = allChildsAtDepth[allMovesInTraversal[i-1]].beta;
@@ -100,28 +100,31 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
       if(allChildsAtDepth[allMovesInTraversal[i]].children.length === 0){
         updateAlphaBetaForLeaf(allMovesInTraversal[i]);
       }
-
     }else{
-      // console.log('child to parent',allMovesInTraversal[i]);
+      console.log('child to parent',allMovesInTraversal[i]);
       updateAlphaBetaForParent(allMovesInTraversal[i]);
       // if alpha >= beta here, prune.
-
+      if(allChildsAtDepth[allMovesInTraversal[i]].alpha >= allChildsAtDepth[allMovesInTraversal[i]].beta){
+        var branch_to_be_pruned = allMovesInTraversal[i];
+        console.log(allMovesInTraversal[i] + ' GOT PRUNED !!!!');
+        if(i == allMovesInTraversal.length -2) break;
+        while(allMovesInTraversal[i+1].indexOf(branch_to_be_pruned) > -1) i++;
+      }
     }
-    // console.log('alpha',allChildsAtDepth[allMovesInTraversal[i]].alpha);
-    // console.log('beta',allChildsAtDepth[allMovesInTraversal[i]].beta);
-    // console.log('value',allChildsAtDepth[allMovesInTraversal[i]].value);
-    // console.log('\n');
+    // console.log('allChildsAtDepth[allMovesInTraversal[i]].alpha',allChildsAtDepth[allMovesInTraversal[i]].alpha);
+    // console.log('allChildsAtDepth[allMovesInTraversal[i]].beta',allChildsAtDepth[allMovesInTraversal[i]].beta);
+    // console.log('allChildsAtDepth[allMovesInTraversal[i]].value',allChildsAtDepth[allMovesInTraversal[i]].value);
   }
   var final_traversal = allMovesInTraversal[allMovesInTraversal.length-1];
   while(final_traversal !== 'root'){
     final_traversal = final_traversal.substring(0,final_traversal.length-5);
     console.log('final_traversal',final_traversal);
-    updateAlphaBetaForParent(final_traversal);
+    updateAlphaBetaForParent(final_traversal);  // as we know for sure we're travelling back to parent
   }
 
-    for(var i=0;i<allKeys.length;i++){
-      console.log(allChildsAtDepth[allKeys[i]].key + '\nvalue ' + allChildsAtDepth[allKeys[i]].value);
-      console.log('alpha '+ allChildsAtDepth[allKeys[i]].alpha + ' beta ' + allChildsAtDepth[allKeys[i]].beta + '\n');
-    }
+    // for(var i=0;i<allKeys.length;i++){
+    //   console.log(allChildsAtDepth[allKeys[i]].key + '\nvalue ' + allChildsAtDepth[allKeys[i]].value);
+    //   console.log('alpha '+ allChildsAtDepth[allKeys[i]].alpha + ' beta ' + allChildsAtDepth[allKeys[i]].beta + '\n');
+    // }
 
 };

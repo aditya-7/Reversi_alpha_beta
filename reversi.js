@@ -120,6 +120,7 @@ for(var i=1; i<= DEPTH; i++){
       player = 'B';
     }
     var children = getAllValidMoves(childNodes[j].state, pl, op, player);
+    //MAKE CHECK FOR A PASS MOVE
     _.forEach(children, function(board, key){
       var some_key = childNodes[j].key + '->' + key;
       temp_nodes_array.push({
