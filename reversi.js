@@ -59,8 +59,10 @@ function convertToBoardMove(move){
       col = 'f'; break;
     case '6':
       col = 'f'; break;
-    default:  //case '7'
+    case '7'
       col = 'h';
+    default:  // if the move is a pass
+      return 'pass';
   }
   var row = Number(move[0]) + 1;
   return col+row;
