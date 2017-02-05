@@ -116,7 +116,7 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
   while(final_traversal !== 'root'){
     final_traversal = final_traversal.substring(0,final_traversal.length-5);
     console.log('final_traversal',final_traversal);
-    // updateAlphaBetaForParent(final_traversal);
+    updateAlphaBetaForParent(final_traversal);
   }
 
     for(var i=0;i<allKeys.length;i++){
