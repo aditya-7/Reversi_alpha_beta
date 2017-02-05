@@ -80,6 +80,7 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
   }
 
   function updateAlphaBetaForParent(key){
+    console.log('key',key);
     if(allChildsAtDepth[key].level % 2 === 0){
       allChildsAtDepth[key].value = parent_node_value(key, 'MAX');
       maximiser(key);

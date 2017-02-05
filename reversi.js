@@ -6,8 +6,13 @@ var getAllValidMoves = require('./getAllValidMoves');
 // var whites = [{row: 3, col:5},{row: 4, col:4}, {row:5, col:0}, {row:1, col:0}];
 // var blacks = [{row: 3, col:3 },{row: 3, col:4},{row: 2, col:4}, {row:4, col:1}, {row:2, col:1}];
 
-var whites = [{row:3,col:3}, {row:4, col:5}];
-var blacks = [{row: 2, col:3},{row: 3, col:4}];
+// use this combo to test pruning
+// var whites = [{row:3,col:3}, {row:4, col:5}];
+// var blacks = [{row: 2, col:3},{row: 3, col:4}];
+
+// use this combo to test pass move
+var whites =[{row:3, col:3}, {row:3, col:5}];
+var blacks =[{row:3, col:4}];
 var board = [];
 
 //Note that board starts from [0][0] and ends at [7][7] here.
@@ -96,7 +101,7 @@ function checkForPassMove(board){
       if(board[i][j] === 'X') x = true;
       else if(board[i][j] === 'O') y = true;
       else z = true;
-      if( x && y && z) return {'pass': board};
+      if( x && y && z) return {'pas': board};
     }
   }
   return {};
