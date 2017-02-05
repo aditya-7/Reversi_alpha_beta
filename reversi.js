@@ -59,7 +59,7 @@ console.log('\n\n********ORIGINAL STATE OF BOARD********');
 printBoard(board); // print the actual board
 
 var childNodes;
-var DEPTH = 3;
+var DEPTH = 2;
 var allChildsAtDepth;
 var original_player = 'W';
 
@@ -134,7 +134,6 @@ for(var i=1; i<= DEPTH; i++){
         level: i,
       });
       allChildsAtDepth[childNodes[j].key].children.push(some_key);
-      childNodes[j].children.push(some_key);
       allKeys.push(some_key);
       allChildsAtDepth[some_key] = JSON.parse(JSON.stringify(temp_nodes_array[temp_nodes_array.length-1]));
     });

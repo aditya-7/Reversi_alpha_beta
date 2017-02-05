@@ -1,10 +1,5 @@
 module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
 
-  var _ALPHA = -99999;
-  var _BETA = 99999;
-  allChildsAtDepth['root'].alpha = _ALPHA;
-  allChildsAtDepth['root'].beta = _BETA;
-
   var allMovesInTraversal = ['root'];
   for(var i=1; i<allKeys.length; i++){
     if(allKeys[i].indexOf(allKeys[i-1]) > -1){
@@ -20,6 +15,11 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
     }
   }
   console.log('final traversal: ',allMovesInTraversal);
+
+  var _ALPHA = -99999;
+  var _BETA = 99999;
+  allChildsAtDepth['root'].alpha = _ALPHA;
+  allChildsAtDepth['root'].beta = _BETA;
 
   var weights = [
     [99, -8, 8, 6, 6, 8, -8, 99],
@@ -47,19 +47,6 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
     return value;
   }
 
-  function parent_node_value(key, code){
-    var children = allChildsAtDepth[key].children;
-    var min = allChildsAtDepth[children[0]].value;
-    var max = allChildsAtDepth[children[0]].value;
-    for(var i=1;i<children.length;i++){
-      if(allChildsAtDepth[children[i].value] === null) continue;
-      if(allChildsAtDepth[children[i]] > max) max = allChildsAtDepth[children[i]];
-      if(allChildsAtDepth[children[i]] < min) min = allChildsAtDepth[children[i]];
-    }
-    if(code === 'MAX') return max;
-    return min;
-  }
-
   function maximiser(key){
     allChildsAtDepth[key].alpha = (allChildsAtDepth[key].alpha > allChildsAtDepth[key].value) ? allChildsAtDepth[key].alpha : allChildsAtDepth[key].value;
   }
@@ -74,6 +61,24 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
     else minimiser(key);
   }
 
+  function parent_node_value(key, code){
+    var children = allChildsAtDepth[key].children;
+    var max = null;
+    var min = null;
+    for(var i=0;i<children.length;i++){
+      if(allChildsAtDepth[children[i]].value === null) continue;
+      if(max === null){ // min === null
+        max = allChildsAtDepth[children[i]].value;
+        min = allChildsAtDepth[children[i]].value;
+      }else{
+        if(allChildsAtDepth[children[i]].value > max) max = allChildsAtDepth[children[i]].value;
+        if(allChildsAtDepth[children[i]].value < min) min = allChildsAtDepth[children[i]].value;
+      }
+    }
+    if(code === 'MAX') return max;
+    return min; // if code == 'MIN'
+  }
+
   function updateAlphaBetaForParent(key){
     if(allChildsAtDepth[key].level % 2 === 0){
       allChildsAtDepth[key].value = parent_node_value(key, 'MAX');
@@ -86,24 +91,36 @@ module.exports = function alpha_beta(allChildsAtDepth, allKeys, player){
 
   for(var i=1; i<allMovesInTraversal.length; i++){
     if(allChildsAtDepth[allMovesInTraversal[i]].parent === allMovesInTraversal[i-1]){
-      console.log('parent to child',allMovesInTraversal[i]);
-      // child node, pass down the alpha beta value.
-      // but check if its a terminal node first.
+      // console.log('parent to child',allMovesInTraversal[i]);
+      // pass down the alpha-beta values
       allChildsAtDepth[allMovesInTraversal[i]].alpha = allChildsAtDepth[allMovesInTraversal[i-1]].alpha;
       allChildsAtDepth[allMovesInTraversal[i]].beta = allChildsAtDepth[allMovesInTraversal[i-1]].beta;
+
+      // if a terminal node is encountered, find values of the terminal node
       if(allChildsAtDepth[allMovesInTraversal[i]].children.length === 0){
-        // it is a terminal node
         updateAlphaBetaForLeaf(allMovesInTraversal[i]);
       }
+
     }else{
-      console.log('child to parent',allMovesInTraversal[i]);
+      // console.log('child to parent',allMovesInTraversal[i]);
       updateAlphaBetaForParent(allMovesInTraversal[i]);
+      // if alpha >= beta here, prune.
+      
     }
+    // console.log('alpha',allChildsAtDepth[allMovesInTraversal[i]].alpha);
+    // console.log('beta',allChildsAtDepth[allMovesInTraversal[i]].beta);
+    // console.log('value',allChildsAtDepth[allMovesInTraversal[i]].value);
+    // console.log('\n');
+  }
+  var final_traversal = allMovesInTraversal[allMovesInTraversal.length-1];
+  while(final_traversal === 'root'){
+    final_traversal = final_traversal.substring(0,final_traversal.length-5);
+    updateAlphaBetaForParent(allMovesInTraversal[i]);
   }
 
-  for(var i=0;i<allMovesInTraversal.length;i++){
-    console.log(allChildsAtDepth[allMovesInTraversal[i]].key + ' ' + allChildsAtDepth[allMovesInTraversal[i]].value);
-    console.log('alpha '+ allChildsAtDepth[allMovesInTraversal[i]].alpha + ' beta' + allChildsAtDepth[allMovesInTraversal[i]].beta);
-  }
+    for(var i=0;i<allKeys.length;i++){
+      console.log(allChildsAtDepth[allKeys[i]].key + '\nvalue ' + allChildsAtDepth[allKeys[i]].value);
+      console.log('alpha '+ allChildsAtDepth[allKeys[i]].alpha + ' beta ' + allChildsAtDepth[allKeys[i]].beta + '\n');
+    }
 
 };
